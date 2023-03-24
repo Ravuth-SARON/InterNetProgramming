@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #lds-dual-ring {
+        display: inline-block;
+        width: 80px;
+        color: antiquewhite;
+        height: 80px;
+      }
+      #lds-dual-ring:after {
+        content: " ";
+        display: block;
+        width: 64px;
+        height: 64px;
+        margin: 8px;
+        border-radius: 50%;
+        border: 6px solid #fff;
+        border-color: #fff transparent #fff transparent;
+        animation: lds-dual-ring 1.2s linear infinite;
+      }
+      @keyframes lds-dual-ring {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div
+    id="main"
+    style="
+      width: 1200px;
+      background-color: grey;
+      height: 500px;
+      margin: auto;
+      overflow-y: scroll;
+    "
+  >
+ 
+  </div>
+  <div id="lds-dual-ring" >
+    
+  </div>
+ 
+
+  </body>
+   
+
+    <script>
+      const mainEl = document.getElementById("main");
+      const loader=document.getElementById('lds-dual-ring');
+      
+      let isDataLoading = false;
+      let currPage = 0;
+      function getAPI(page) {
+        isDataLoading = true;
+        
+        fetch(
+          `https://api.instantwebtools.net/v1/passenger?page=${page}&size=5`
+        )
+          .then(async (res) => {
+            let data = await res.json();
+            setTimeout(()=>{
+            let data1 = data.data; //get the data
+            ////We need to convert in to string in order to destructing obj in local storage
+            data1.forEach((element) => {
+              let airline = element.airline;
+              airline.forEach((element2) => {
+                mainEl.innerHTML += `
+                <div style="height: 100px; background-color:#fff;border:2px solid black">
+                  <div>${element2["name"]}-${element2["country"]}</div>
+                  <br>
+                  <div style="display:flex">
+                    <img src="../assets/img.png" style="width:30px; height: 30px; margin-top:10px" alt="">
+                    <p>${element["name"]}</p>
+                  </div>
+                </div>
+                `;
+              });
+            });
+            console.log(5);
+            localStorage.setItem("MaxPage",currPage++)
+            localStorage.setItem(currPage,JSON.stringify(data));
+            currPage++;
+
+            })
+            
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            isDataLoading = true;
+            loader.hidden=false;
+            console.log("data loaded");
+          });
+      }
+
+
+
+
+      mainEl.addEventListener("scroll", () => {
+        if (
+          (mainEl.scrollTop + mainEl.clientHeight) >=
+          mainEl.scrollHeight*0.95
+        ){
+          getAPI(currPage);
+          console.log(currPage);
+          console.log( mainEl.scrollHeight*0.95);
+          console.log( mainEl.clientHeight);
+          console.log( mainEl.scrollTop);
+
+        }
+      });
+      getAPI(currPage);
+
+      ////////////////-CHECK GET ITEM FROM LOCAL STORAGE/////////////////
+
+
+      
+      //For this for get item from local storage when there is no internet it gonna show only the 5 element of 5 page
+  
+      // var user = JSON.parse(localStorage.getItem('1'))
+      // console.log(user.data);
+      
+  
+      
+      //   user.data.forEach(element => {
+      //     console.log(element.name);
+      //    element.airline.forEach(element2=>{
+      //     mainEl.innerHTML += `
+      //           <div style="height: 100px; background-color:#fff;border:2px solid black">
+      //             <div>${element2["name"]}-${element2["country"]}</div>
+      //             <br>
+      //             <div style="display:flex">
+      //               <img src="../assets/img.png" style="width:30px; height: 30px; margin-top:10px" alt="">
+      //               <p>${element["name"]}</p>
+      //             </div>
+      //           </div>
+      //           `
+          
+      //    })
+         
+          
+      //   });
+     
+
+    
+
+    </script>
+  </body>
+</html>
