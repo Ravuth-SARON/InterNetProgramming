@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Righteous&display=swap"
+      rel="stylesheet"
+    />
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div
+      class="flex justify-center border-[2px] rounded-sm border-slate-500 w-[600px] m-auto bg-yellow-100"
+    >
+      <div class="grid content-center h-[460px]">
+        <img src="images.jpg" alt="" />
+        <h1
+          style="font-family: 'Righteous', cursive"
+          class="text-2xl flex justify-center mb-[20px]"
+        >
+          Khmer Past time
+        </h1>
+        <form action="" class="flex">
+          <input
+            type="datetime-local"
+            id="date"
+            name="birthdaytime"
+            class="border-[5px] rounded-lg border-black w-[200px] h-[100px] ml-[20px] mr-[10px]"
+          />
+        </form>
+        <p class="" id="timeGap"></p>
+      </div>
+    </div>
+    <script type="module">
+      import { khmerDate } from "./library.js";
+      var date_input = document.getElementById("date");
+      date_input.addEventListener("onchange", () => {
+        const in_date = new Date(this.value);
+        const inputDate = new KhmerDate(new Date(in_date.getTime()));
+        console.log(inputDate.getRelativeTime());
+        console.log(inputDate.getDate());
+        console.log(Date.now());
+        document.getElementById("status").innerHTML =
+          inputDate.getRelativeTime();
+        console.log(this.value);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style></style>
+  </head>
+  <body>
+    <div id="container" style="display: flex; gap: 70px">
+      <div
+        id="allList"
+        onclick="click()"
+        style="
+          width: fit-content;
+          background-color: beige;
+          padding: 10px;
+          height: 700px;
+          overflow-y: auto;
+        "
+      ></div>
+      <div
+        id="detail"
+        style="
+          width: 300px;
+          height: fit-content;
+          padding: 100px 100px;
+          border-radius: 5px;
+          border: 2px solid gray;
+        "
+      ></div>
+    </div>
+
+    <script scr="./app.js">
+      let currPage = 1;
+      const container = document.getElementById("container");
+      const allList = document.getElementById("allList");
+      // const item = document.getElementById("item");
+      const detail = document.getElementById("detail");
+
+      function fetchApi(page) {
+        fetch(`https://api.punkapi.com/v2/beers?page=${page}&per_page=5`)
+          .then(async (res) => {
+            const data = await res.json();
+            localStorage.setItem(page, JSON.stringify(data));
+            data.forEach((element) => {
+              const fewWordDes = element["description"].substr(0, 50);
+
+              allList.innerHTML += `
+              <div id="item">
+                 <button id="item${element.id}" onclick="viewDetail(${element.id})" style="display:grid ;width:400px;height:200px;border-radius:10px ;border:1px solid black" >
+                      <p style="font-size:40px">🍻</p>
+                        <h style="font-size:20px; " ><b>${element.name}</b></h>
+                       <p style="margin:0 20px; opacity: .7;">
+                          ${fewWordDes}...
+                       </p>
+                </button>
+              </div>
+                 `;
+            });
+
+            currPage++;
+            localStorage.setItem("List", currPage);
+            localStorage.setItem(`Page${currPage}`, JSON.stringify(data));
+          })
+          .catch((err) => {
+            console.log(error);
+          });
+      }
+
+      function viewDetail(id) {
+        fetch(`https://api.punkapi.com/v2/beers`)
+          .then(async (res) => {
+            const data = await res.json();
+            document.getElementById(`item${id}`).style.backgroundColor = "grey";
+            let checkEl = document.getElementById(`item`);
+
+            data.forEach((element) => {
+              if (id === element.id) {
+                detail.innerHTML = `
+              <img src="${element.image_url}" style="width:200px;height:300px;margin:auto;display:flex;justify-content:center" alt=""  /><br />
+              <h style="margin:auto;display:flex;justify-content:center"><b>${element.name}</b></h>
+              <p style="display:flex;justify-content:center">${element.first_brewed}</p>
+              <p>${element.description}</p>
+              <p style="display:flex;justify-content:center">Contributed By</p>
+              <p style="display:flex;justify-content:center; font-weight: bold;">(${element.contributed_by})</p>
+              `;
+              }
+              checkEl.classList.replace(`item${id}`, `item${id}`);
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {});
+      }
+
+      document.getElementById("allList").addEventListener("scroll", () => {
+        if (
+          allList.scrollTop + allList.clientHeight >=
+          allList.scrollHeight * 0.98
+        ) {
+          fetchApi(currPage);
+        }
+      });
+
+      fetchApi(currPage);
+    </script>
+  </body>
+</html>
